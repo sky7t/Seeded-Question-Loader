@@ -1,1 +1,23 @@
-
+1. What is NLP?
+2. What are the stages in the lifecycle of a natural language processing (NLP) project?
+3. What are the main challenges in NLP?
+4. What do you mean by these terms in NLP?
+• Corpus
+• vocabulary
+5. What are some common pre-processing techniques used in NLP?
+6. What is difference between text cleaning and text normalization
+7. What is text normalization in NLP, and what are the methods for text normalization?
+8. What is tokenization in NLP?
+9. What is stemming in NLP, and how is it different from lemmatization?
+10.What are the different stemming methods in NLTK?
+11.What is the difference between Porter and Snowball stemmer?
+12.What tokenizers are used by: GPT and BERT?
+13.Explain Over-stemming vs Under-stemming.
+14.What is the use of POS tags in WordNetLemmatizer
+15.What are the different sub-word tokenization methods?
+16.Explain in brief: BPE, WordPiece, SentencePiece
+17.Explain how the WordPiece tokenizer works.
+18.Write a code for Tokenization.
+19.Write a code for Stemming and Lemmatization
+20.Write a code for stopword removal.
+21.What are the different ways of tokenization in NLTK?
