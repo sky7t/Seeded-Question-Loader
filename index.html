@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Username File Loader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      padding-bottom: 50px; /* Ensure footer has space */
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+    }
+    #output {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+    #advancedSettings {
+      display: none;
+      margin-top: 20px;
+    }
+    /* Footer styling */
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
+      background-color: #f1f1f1;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Seeded Question Loader</h2>
+  <input type="text" id="seed" placeholder="Enter a seed (e.g. 123, abc)">
+  <input type="text" id="username" placeholder="Enter AA, BB, or CC">
+  <br>
+  <button onclick="loadFile()">Go</button>
+  <button onclick="toggleAdvancedSettings()">Advanced Settings</button>
+
+  <div id="advancedSettings">
+    <input type="number" id="numQuestions" placeholder="Number of questions per group" min="1">
+    <label for="allowRepeat">Allow repeated questions</label>
+    <input type="checkbox" id="allowRepeat">
+  </div>
+
+  <br>
+
+  <div id="output"></div>
+
+  <script>
+    const files = {};
+
+    function seededRandom(seed) {
+      let s = 0;
+      for (let i = 0; i < seed.length; i++) {
+        s += seed.charCodeAt(i);
+      }
+      return function () {
+        s = Math.sin(s) * 10000;
+        return s - Math.floor(s);
+      };
+    }
+
+    async function prepareFiles(seed, numQuestions, allowRepeat) {
+      const response = await fetch('A1.txt');
+      if (!response.ok) {
+        document.getElementById("output").textContent = "A1.txt not found.";
+        return;
+      }
+
+      const text = await response.text();
+      const rawQuestions = text.split(/\n*\s*\d+\.\s*/).filter(q => q.trim() !== "");
+      const questions = rawQuestions.map((q, i) => `${i + 1}. ${q.trim()}`);
+
+      const rng = seededRandom(seed);
+
+      // Shuffle questions if repetition is not allowed
+      if (!allowRepeat) {
+        for (let i = questions.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          [questions[i], questions[j]] = [questions[j], questions[i]];
+        }
+      }
+
+      const total = questions.length;
+      const groupSize = numQuestions || Math.floor(total / 3);
+      
+      const groupA = [];
+      const groupB = [];
+      const groupC = [];
+
+      // Distribute questions per group, respecting numQuestions
+      while (groupA.length < groupSize) {
+        const randIndex = Math.floor(rng() * questions.length);
+        groupA.push(questions[randIndex]);
+        if (!allowRepeat) {
+          questions.splice(randIndex, 1); // Remove the selected question if not repeating
+        }
+      }
+
+      while (groupB.length < groupSize) {
+        const randIndex = Math.floor(rng() * questions.length);
+        groupB.push(questions[randIndex]);
+        if (!allowRepeat) {
+          questions.splice(randIndex, 1); // Remove the selected question if not repeating
+        }
+      }
+
+      while (groupC.length < groupSize) {
+        const randIndex = Math.floor(rng() * questions.length);
+        groupC.push(questions[randIndex]);
+        if (!allowRepeat) {
+          questions.splice(randIndex, 1); // Remove the selected question if not repeating
+        }
+      }
+
+      // If repetition is allowed, we don't remove the questions, and they can reappear in groups.
+      files.AA = groupA.join('\n\n');
+      files.BB = groupB.join('\n\n');
+      files.CC = groupC.join('\n\n');
+    }
+
+    async function loadFile() {
+      const seed = document.getElementById("seed").value.trim();
+      const username = document.getElementById("username").value.trim().toUpperCase();
+      const output = document.getElementById("output");
+
+      if (!seed) {
+        output.textContent = "Please enter a seed.";
+        return;
+      }
+
+      // Only get numQuestions if advanced settings are visible
+      const numQuestions = document.getElementById("advancedSettings").style.display === "block" && document.getElementById("numQuestions").value ? parseInt(document.getElementById("numQuestions").value.trim()) : null;
+      const allowRepeat = document.getElementById("allowRepeat").checked;
+      
+      await prepareFiles(seed, numQuestions, allowRepeat);
+
+      if (files[username]) {
+        output.textContent = files[username];
+      } else {
+        output.textContent = "Invalid username. Please enter AA, BB, or CC.";
+      }
+    }
+
+    function toggleAdvancedSettings() {
+      const advancedSettings = document.getElementById("advancedSettings");
+      if (advancedSettings.style.display === "none" || advancedSettings.style.display === "") {
+        advancedSettings.style.display = "block";
+      } else {
+        advancedSettings.style.display = "none";
+      }
+    }
+  </script>
+
+  <!-- Footer -->
+  <footer>
+    SiddharthSky
+  </footer>
+
+</body>
+</html>
