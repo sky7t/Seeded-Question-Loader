@@ -21,8 +21,8 @@
 19.Write a code for Stemming and Lemmatization
 20.Write a code for stopword removal.
 21.What are the different ways of tokenization in NLTK?
-
 1. What do you mean by vector space in NLP?
+
 3. What is the bag-of-words model?
 4. Define the Bag of N-grams model in NLP.
 5. What is the term frequency-inverse document frequency
